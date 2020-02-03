@@ -21,28 +21,28 @@ class ResponseCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var responseLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
 
-    var response: NSURLResponse!
-    var task: NSURLSessionDataTask?
+    var response: URLResponse!
+    var task: URLSessionDataTask?
 
     func configure(date: String) {
         let URL = NasaURL(date: date).url
         spinner.startAnimating()
 
-        self.task = NetworkClient.sharedInstance.getURLResponse(URL, completion: { (object, error) in
+        self.task = NetworkClient.sharedInstance.getURLResponse(URL: URL, completion: { (object, error) in
             self.spinner.stopAnimating()
             guard error == nil else {
                 print("\(error)")
                 return
             }
 
-            guard let response = object as? NSHTTPURLResponse else {
+            guard let response = object as? HTTPURLResponse else {
                 print("not a http url response")
                 return
             }
 
             if let apiRemaining = response.allHeaderFields[HeaderFields.XRateLimitRemaining.rawValue] as? String {
                 self.responseLabel.text = apiRemaining
-                let day = date.substringWithRange(Range<String.Index>(date.startIndex.advancedBy(5)..<date.endIndex))
+                let day = "test"//date.substringWith(Range<String.Index>(date.startIndex.advanced(by: 5)..<date.endIndex))
                 self.dateLabel.text = day
             }
         })

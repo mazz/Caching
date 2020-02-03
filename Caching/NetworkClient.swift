@@ -8,20 +8,20 @@
 
 import Foundation
 
-typealias NetworkResult = (AnyObject?, ErrorType?) -> Void
+typealias NetworkResult = (AnyObject?, Error?) -> Void
 
 class NetworkClient: NSObject {
     static let sharedInstance = NetworkClient()
 
-    func getURLResponse(URL: NSURL, completion: NetworkResult) -> NSURLSessionDataTask {
-        let request = NSURLRequest(URL: URL)
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { (data, response, error) in
+    func getURLResponse(URL: NSURL, completion: @escaping NetworkResult) -> URLSessionDataTask {
+        let request = NSURLRequest(url: URL as URL)
+        let task = URLSession.shared.dataTask(with: request as URLRequest) { (data, response, error) in
             if error == nil {
-                NSOperationQueue.mainQueue().addOperationWithBlock {
+                OperationQueue.main.addOperation {
                     completion(response, nil)
                 }
             } else {
-                NSOperationQueue.mainQueue().addOperationWithBlock {
+                OperationQueue.main.addOperation {
                     completion(nil, error)
                 }
             }
@@ -50,8 +50,8 @@ struct NasaURL {
             urlComponents.host = host
             urlComponents.scheme = scheme
             urlComponents.queryItems = [NSURLQueryItem(name: "api_key", value: api_key),
-                NSURLQueryItem(name: "date", value: self.date)]
-            return urlComponents.URL!
+                                        NSURLQueryItem(name: "date", value: self.date)] as [URLQueryItem]
+            return urlComponents.url! as NSURL
         }
     }
 }
